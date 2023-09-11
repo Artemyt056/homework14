@@ -1,0 +1,36 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import config
+
+
+def send_email(
+        recipients: list[str],
+        mail_body: str,
+        mail_subject: str,
+        attachment: str = None,
+):
+    SERVER = config.SMTP_SERVER
+    PASSWORD = config.TOKEN_API
+    USER = config.USER
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = mail_subject
+    msg['From'] = f'<Artem Kholodchenko {USER}>'
+    msg['To'] = ', '.join(recipients)
+    msg['Reply-to'] = USER
+    msg['Return-Path'] = USER
+    msg['X-Mailer'] = 'decorator'
+
+    text_to_send = MIMEText(mail_body, 'plain')
+    msg.attach(text_to_send)
+
+    mail = smtplib.SMTP_SSL(SERVER)
+    mail.login(USER, PASSWORD)
+    mail.sendmail(USER, recipients, msg.as_string())
+    mail.quit()
+
+
+def check_email():
+    pass
